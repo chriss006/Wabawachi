@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gx$ci*pwwj)k%hro=3y*)+n%(t7aba6vftstoqft12d(y@fyca"
+SECRET_KEY = "django-insecure-qyh!*j1o384oq^df9b2((qxsb%n4%xa-l2nt*k&_+y%xy!f58k"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,19 +29,16 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+# Application definition
 THIRD_PARTY_APPS = [
-
     'rest_framework',
     'rest_framework.authtoken',
+     "rest_framework_api_key",
     ]
 
-CUSTOM_APPS = [
-    'common.apps.CommonConfig',
-    'users.apps.UsersConfig',
-    'reviews.apps.ReviewsConfig',
-    'basketlists.apps.BasketlistsConfig',
-    'winesellers.apps.WinesellersConfig',
-]
+CUSTOM_APPS = ['users.apps.UsersConfig',
+               'winesearch.apps.WinesearchConfig']
+
 SYSTEM_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,12 +46,8 @@ SYSTEM_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    
 ]
-
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -87,8 +80,7 @@ WSGI_APPLICATION = "wabawachi.wsgi.application"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근 가능
-        'rest_framework.permissions.IsAdminUser', # 관리자만 접근 가능
+
         'rest_framework.permissions.AllowAny', # 누구나 접근 가능
 
     ),
@@ -109,8 +101,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-import datetime
-# 추가적인 JWT_AUTH 설젇
+
+import datetime 
 JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_ALGORITHM': 'HS256', # 암호화 알고리즘
@@ -136,6 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
+
 LANGUAGE_CODE = "ko-kr"
 
 TIME_ZONE = "Asia/Seoul"
@@ -143,7 +136,6 @@ TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -155,4 +147,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'users.User' 
+AUTH_USER_MODEL = 'users.User'

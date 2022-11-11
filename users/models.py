@@ -1,6 +1,5 @@
-# my_user/models.py
-import datetime
 from django.db import models
+import datetime
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -100,3 +99,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email
+
