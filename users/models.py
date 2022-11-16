@@ -60,11 +60,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     customized User
     """
-    first_name = models.CharField(max_length=150, editable=False,)
-    last_name = models.CharField(max_length=150, editable=False )
-    is_staff = models.BooleanField( _('staff status'),default=False,)
-    is_active = models.BooleanField(_('active'),default=True,)
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
 
     #custom
     email = models.EmailField(
