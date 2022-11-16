@@ -34,7 +34,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-
+    'corsheaders',
     ]
 
 CUSTOM_APPS = ['users.apps.UsersConfig',
