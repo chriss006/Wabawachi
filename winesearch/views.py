@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import WineDetailSerializer
 from wineceller.models import Wine
-#from .recommend import *
+from .recommend import preprocess_doc, find_similar_wine
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
@@ -13,7 +13,7 @@ db = client['winedb']
 
 class SearchView(APIView):
     def get(self, request):
-        es = Elasticsearch([{'host':'192.168.20.68', 'port':'9200'}])
+        es = Elasticsearch([{'host':'https://search-waba-cgvedgrfkpn7eoswsulfst47y4.ap-northeast-1.es.amazonaws.com', 'port':'443'}])
         search_word_0 = request.GET.get('search')
         sl = list(search_word_0.split())
         search_word = ''.join(sl)
@@ -93,13 +93,13 @@ class SearchDetailView(APIView):
         
 class SimilarWineListView(APIView):
     
-       def get(self, request, wine_id):
+    def get(self, request, wine_id):
+    
+        doc = preprocess_doc()
+        input_vec = doc[doc['wine_id']==wine_id].values
+        wine_list= recommend_similar_wine(input_vec, doc)
         
-#         doc = preprocess_doc()
-#         input_vec = doc[doc['wine_id']==wine_id].values
-#         wine_list= recommend_similar_wine(input_vec, doc)
-        
-         return Response()
+        return Response()
         
         
 

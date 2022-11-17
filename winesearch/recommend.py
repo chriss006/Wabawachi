@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-#from sklearn.preprocessing import LabelEncoder
-import pymongo
+from sklearn.preprocessing import LabelEncoder
 from pymongo import MongoClient
 
 client = MongoClient("localhost:27017")
@@ -11,13 +10,13 @@ db = client['winedb']
 # 추천시스템
 
 
-# def preprocess_doc():
-#     docs = db.wine_db.find({},{'_id':0, 'wine_id':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape':1})
-#     doc = pd.DataFrame(docs, columns=['wine_id','sweet','acidic','body','tannic','winetype','kr_grape'])
-#     le = LabelEncoder()
-#     doc['kr_grape'] = le.fit_transform(doc['kr_grape'])
-#     doc['winetype'] = le.fit_transform(doc['winetype']) 
-#     return doc
+def preprocess_doc():
+    docs = db.wine_db.find({},{'_id':0, 'wine_id':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape':1})
+    doc = pd.DataFrame(docs, columns=['wine_id','sweet','acidic','body','tannic','winetype','kr_grape'])
+    le = LabelEncoder()
+    doc['kr_grape'] = le.fit_transform(doc['kr_grape'])
+    doc['winetype'] = le.fit_transform(doc['winetype']) 
+    return doc
 
 
     
