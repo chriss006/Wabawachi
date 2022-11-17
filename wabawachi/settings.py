@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-qyh!*j1o384oq^df9b2((qxsb%n4%xa-l2nt*k&_+y%xy!f58k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['15.165.220.123']
+ALLOWED_HOSTS = ['127.0.0.1','15.165.220.123']
 
 
 # Application definition
@@ -133,39 +133,41 @@ SIMPLE_JWT = {
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 import os
-if DEBUG:
     
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'ENFORCE_SCHEMA': True,
-            'LOGGING': {
-                'version': 1,
-                'loggers': {
-                    'djongo': {
-                        'level': 'DEBUG',
-                        'propogate': False,                        
-                    }
-                },
+DATABASES = {
+    'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'wabawachi',
+    'USER': 'root',
+    'PASSWORD': '1234',
+    'HOST': '127.0.0.1',
+    'PORT': '5432',
+    },
+    'wine_db': {
+        'ENGINE': 'djongo',
+        'ENFORCE_SCHEMA': True,
+        'LOGGING': {
+            'version': 1,
+            'loggers': {
+                'djongo': {
+                    'level': 'DEBUG',
+                    'propogate': False,                        
+                }
             },
-            'NAME': 'wine_db',
-            'CLIENT': {
-                'host': '127.0.0.1',
-                'port': 27017,
-                'username': 'chriss',
-                'password': "1234",
-                'authSource': 'admin',
-                'authMechanism': 'SCRAM-SHA-1'
-            }
+        },
+        'NAME': 'wine_db',
+        'CLIENT': {
+            'host': '127.0.0.1',
+            'port': 27017,
+            'username': 'chriss',
+            'password': "1234",
+            'authSource': 'admin',
+            'authMechanism': 'SCRAM-SHA-1'
         }
     }
+
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -203,5 +205,10 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'users.User'
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+]
 
 CORS_ORIGIN_ALLOW_ALL = True

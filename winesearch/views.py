@@ -3,15 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import WineDetailSerializer
 from wineceller.models import Wine
+#from .recommend import *
 from elasticsearch import Elasticsearch
-import pymongo
 from pymongo import MongoClient
 
 client = MongoClient("localhost:27017")
 db = client['winedb']
 
-class SearchView(APIView):
 
+class SearchView(APIView):
     def get(self, request):
         es = Elasticsearch([{'host':'192.168.20.68', 'port':'9200'}])
         search_word_0 = request.GET.get('search')
@@ -20,37 +20,60 @@ class SearchView(APIView):
         if not search_word:
             return Response(status=status.HTTP_400_BAD_REQUEST,
             data={'message': 'search word param is missing'})
+            
         docs = es.search(
-            index='wine_basket',
+            index='wine_basket_search_engine',
             body = {
-                  "query": {
-                    "bool": {
-                    "should": [{
-                        "prefix": {
-                        "kname": search_word
-                        }
-                    }, {
-                        "term": {
-                        "knameNgram": search_word
-                        }
-                    }, {
-                        "term": {
-                        "knameNgramEdge": search_word
-                        }
-                    }, {
-                        "term": {
-                        "knameNgramEdgeBack": search_word
-                        }
-                    }],
-                    "minimum_should_match": 1
+                "size": 50,
+                    "query": {
+                    "multi_match" : {
+                        "query": search_word
                     }
-                }
+                    }
             }
         )
         data_list = []
         for data in docs['hits']['hits']:
             data_list.append(data.get('_source'))
+        
+        # 출력되는 데이터 없으면 data_list는 빈 리스트가 된다
+        if len(data_list) == 0:
+            docs = es.search(
+                        index='wine_basket_search_engine',
+                        body = {
+                                "size": 50,
+                                "query": {
+                                "multi_match" : {
+                                    "query": search_word,
+                                    "fuzziness": "auto"
+                                        }
+                                    }
+                                }
+                            )
+            for data in docs['hits']['hits']:
+                data_list.append(data.get('_source'))
+            
+            if len(data_list) == 0:
+                docs = es.search(
+                            index='wine_basket_search_engine',
+                            body = {
+                            "size": 50,
+                            "query": {
+                                "match" : {
+                                "kname": {
+                                    "query": search_word,
+                                    "analyzer": "eng2kor_analyzer"
+                                    }
+                                }
+                            }
+                        }
+                        )
+                for data in docs['hits']['hits']:
+                    data_list.append(data.get('_source'))
+                    
         return Response(data_list)
+
+      
     
 class SearchDetailView(APIView):
 
@@ -63,12 +86,21 @@ class SearchDetailView(APIView):
     
         detail_serializer= WineDetailSerializer(data=wine)
         
-        # if detail_serializer.is_valid():  
-        #     return Response({'wine_detail': wine})
-        # else:
-        #     return Response(detail_serializer.errors)
-        return Response(wine)
-
+        if detail_serializer.is_valid():  
+            return Response({'wine_detail': wine})
+        else:
+            return Response(detail_serializer.errors)
+        
+class SimilarWineListView(APIView):
+    
+       def get(self, request, wine_id):
+        
+#         doc = preprocess_doc()
+#         input_vec = doc[doc['wine_id']==wine_id].values
+#         wine_list= recommend_similar_wine(input_vec, doc)
+        
+         return Response()
+        
         
 
 
