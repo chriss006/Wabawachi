@@ -136,11 +136,11 @@ import os
     
 DATABASES = {
     'default': {
-    'ENGINE': 'django.db.backends.postgresql',
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
     'NAME': 'wabawachi',
-    'USER': 'root',
-    'PASSWORD': '1234',
-    'HOST': '127.0.0.1',
+    'USER': 'dbmasteruser',
+    'PASSWORD': '19791127',
+    'HOST': 'ls-c6d1cb46d265bfb5292f2755cdcb732ed63b1a8d.cfqsxx6c5aby.ap-northeast-2.rds.amazonaws.com',
     'PORT': '5432',
     },
     'wine_db': {
