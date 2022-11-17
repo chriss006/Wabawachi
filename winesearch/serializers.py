@@ -8,7 +8,10 @@ class WineDetailSerializer(serializers.ModelSerializer):
        model = Wine
        fields ='__all__'
        
-
+class WineSearchSaveSerialzier(serializers.Serializer):
+    
+    kname = serializers.CharField()
+    wine_id = serializers.IntegerField()
 
        
 

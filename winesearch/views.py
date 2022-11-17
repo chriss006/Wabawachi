@@ -1,9 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import WineDetailSerializer
-from wineceller.models import Wine
-from .recommend import preprocess_doc, find_similar_wine
+from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
@@ -91,15 +89,22 @@ class SearchDetailView(APIView):
         else:
             return Response(detail_serializer.errors)
         
-class SimilarWineListView(APIView):
-    
-    def get(self, request, wine_id):
-    
-        doc = preprocess_doc()
-        input_vec = doc[doc['wine_id']==wine_id].values
-        wine_list= recommend_similar_wine(input_vec, doc)
+    def post(self, request, wine_id):
         
-        return Response()
+        fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
+        wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
+        
+        kname = wine['kname']
+        wine_id = wine['wine_id']
+        
+        save_serializer = WineSearchSaveSerialzier(data=[kname,wine_id])
+        
+        if save_serializer.is_valid():
+            Wine = save_serializer.save()
+            return Response(save_serializer.data)
+        else:
+            return Response(save_serializer.errors)
+        
         
         
 

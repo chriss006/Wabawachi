@@ -5,7 +5,6 @@ urlpatterns = [
     path('/', views.SearchView.as_view()),
     path('/<int:wine_id>', views.SearchDetailView().as_view()),
     path('/addWine', views.AddWineCellerView().as_view()),
-    path('/<int:wine_id>/similarwines', views.SimilarWineListView().as_view())
 
 
 ]

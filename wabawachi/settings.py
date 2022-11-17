@@ -40,6 +40,7 @@ THIRD_PARTY_APPS = [
 CUSTOM_APPS = ['users.apps.UsersConfig',
                'winesearch.apps.WinesearchConfig',
                'wineceller.apps.WinecellerConfig',
+               'winerecommend.apps.WinerecommendConfig',
                'common.apps.CommonConfig']
 
 SYSTEM_APPS = [
