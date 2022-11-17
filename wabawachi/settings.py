@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-qyh!*j1o384oq^df9b2((qxsb%n4%xa-l2nt*k&_+y%xy!f58k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','15.165.220.123']
+ALLOWED_HOSTS = ['127.0.0.1','15.165.220.123', ]
 
 
 # Application definition
@@ -157,7 +157,7 @@ DATABASES = {
         },
         'NAME': 'wine_db',
         'CLIENT': {
-            'host': '127.0.0.1',
+            'host': '15.165.220.123',
             'port': 27017,
             'username': 'chriss',
             'password': "1234",

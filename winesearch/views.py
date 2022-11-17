@@ -7,7 +7,7 @@ from wineceller.models import Wine
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
-client = MongoClient("localhost:27017")
+client = MongoClient("15.165.220.123:27017")
 db = client['winedb']
 
 
