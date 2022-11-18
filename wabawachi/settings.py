@@ -156,7 +156,7 @@ DATABASES = {
                 }
             },
         },
-        'NAME': 'wine_db',
+        'NAME': 'winedb',
         'CLIENT': {
             'host': '15.165.220.123',
             'port': 27017,
