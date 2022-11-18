@@ -5,7 +5,7 @@ from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
-client = MongoClient("15.165.220.123:27017")
+client = MongoClient("3.38.57.203:27017")
 db = client['winedb']
 
 
