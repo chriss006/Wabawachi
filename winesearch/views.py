@@ -43,6 +43,10 @@ class SearchView(APIView):
         data_list = []
         for data in docs['hits']['hits']:
             data_list.append(data.get('_source'))
+            
+
+                    
+        return Response(data_list)
 
       
     
@@ -70,7 +74,7 @@ class SearchDetailView(APIView):
         data={}
         data['kname'] = wine['kname']
         data['wine_id'] = wine['wine_id']
-        data['user'] =User.objects.get(username = request.data.get('username')).pk
+        data['user_id'] =User.objects.get(username = request.data.get('username')).pk
         
         
         save_serializer = WineSearchSaveSerialzier(data=data)
