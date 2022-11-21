@@ -14,13 +14,21 @@ class SearchView(APIView):
     def get(self, request):
         es = Elasticsearch(['https://search-waba-cgvedgrfkpn7eoswsulfst47y4.ap-northeast-1.es.amazonaws.com'],
                            http_auth=('sesac', 'Winebasket1!'))
-        search_word_0 = request.GET.get('search')
-        sl = list(search_word_0.split())
-        search_word = ''.join(sl)
-        if not search_word:
+
+        origin_search = request.GET.get('search')
+
+        if not origin_search:
             return Response(status=status.HTTP_400_BAD_REQUEST,
             data={'message': 'search word param is missing'})
-            
+
+        if origin_search.encode().isalpha():
+            # 영어일 때, 띄어쓰기 유지            
+            search_word = origin_search
+        else:
+            # 한글일 때, 띄어쓰기 제거
+            sl = list(origin_search.split())
+            search_word = ''.join(sl)
+
         docs = es.search(
             index='wine_basket_search_engine',
             body = {
@@ -35,27 +43,6 @@ class SearchView(APIView):
         data_list = []
         for data in docs['hits']['hits']:
             data_list.append(data.get('_source'))
-        
-        # 출력되는 데이터 없으면 data_list는 빈 리스트가 된다
-        if len(data_list) == 0:
-            docs = es.search(
-                        index='wine_basket_search_engine',
-                        body = {
-                                "size": 50,
-                                "query": {
-                                "multi_match" : {
-                                    "query": search_word,
-                                    "fuzziness": "auto"
-                                        }
-                                    }
-                                }
-                            )
-            for data in docs['hits']['hits']:
-                data_list.append(data.get('_source'))
-            
-
-                    
-        return Response(data_list)
 
       
     
