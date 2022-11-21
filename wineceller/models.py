@@ -24,6 +24,7 @@ class Wine(models.Model):
     is_liked = models.BooleanField('찜한 와인',null=False, blank=False, default=False )
 
 
+
     def __str__(self):
         return f'{self.kname} / {self.ename}'
 
