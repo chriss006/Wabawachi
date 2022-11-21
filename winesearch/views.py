@@ -1,16 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from wabawachi.settings import SECRET_KEY
 from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 from users.models import User
+import jwt
 
 client = MongoClient("3.38.57.203:27017")
 db = client['winedb']
 
 
 class SearchView(APIView):
+
     def get(self, request):
         es = Elasticsearch(['https://search-waba-cgvedgrfkpn7eoswsulfst47y4.ap-northeast-1.es.amazonaws.com'],
                            http_auth=('sesac', 'Winebasket1!'))
@@ -51,39 +55,34 @@ class SearchView(APIView):
       
     
 class SearchDetailView(APIView):
-
-    def get(self, request, wine_id):
-
-        # 검색어
-        fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
-        wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
-
-    
-        detail_serializer= WineDetailSerializer(data=wine)
-        
-        if detail_serializer.is_valid():  
-            return Response({'wine_detail': wine})
-        else:
-            return Response(detail_serializer.errors)
         
     def post(self, request, wine_id):
         
         fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
         wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
         
+        access = request.COOKIES['access']
+        payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
+        pk = payload.get('user_id')         
         data={}
         data['kname'] = wine['kname']
         data['wine_id'] = wine['wine_id']
-        data['user_id'] =User.objects.get(username = request.data.get('username')).pk
-        
+        data['user'] = pk
+
         
         save_serializer = WineSearchSaveSerialzier(data=data)
+        detail_serializer= WineDetailSerializer(data=wine)
         
         if save_serializer.is_valid():
-            Wine = save_serializer.save()
-            return Response(save_serializer.data)
+            save_serializer.save()
+            print(save_serializer.data)
         else:
             return Response(save_serializer.errors)
+            
+        if detail_serializer.is_valid() :
+            return Response({'wine_detail':detail_serializer.data})
+        else:
+            return Response(detail_serializer.errors)
         
         
         
