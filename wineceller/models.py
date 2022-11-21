@@ -7,18 +7,19 @@ from common.models import CommonModel
 class Wine(models.Model):
     
     wine_picture = models.URLField(null=False, blank=False)
+    wine_id = models.IntegerField(null=False, blank=False, default=0)
     kname = models.CharField('와인명', max_length=100, null=False, blank=False)
     ename = models.CharField('winename', max_length=100, null=False, blank=False)
     winetype = models.CharField('winetype', max_length=10, null=False, blank=False)
     kr_country = models.CharField('국가명', max_length=50)
     kr_region = models.CharField('지역명', max_length=50)
-    kr_grape_list = ArrayField(models.CharField(max_length=20), blank=True, default=[])  
+    kr_grape_list = ArrayField(models.CharField(max_length=20), blank=True, default=list)  
     sweet = models.IntegerField('당도')
     acidic= models.IntegerField('산도')
     body = models.IntegerField('바디감')
     tannic = models.IntegerField('타닌감')
-    notes_list =ArrayField(models.CharField(max_length=20), blank=True, default=[])  
-    food_list = ArrayField(models.CharField(max_length=20), blank=True, default=[])  
+    notes_list =ArrayField(models.CharField(max_length=20), blank=True, default=list)  
+    food_list = ArrayField(models.CharField(max_length=20), blank=True, default=list)  
     have_tried= models.BooleanField('먹어본 와인', null=False, blank=False, default=False )
     is_liked = models.BooleanField('찜한 와인',null=False, blank=False, default=False )
 

@@ -41,6 +41,7 @@ CUSTOM_APPS = ['users.apps.UsersConfig',
                'winesearch.apps.WinesearchConfig',
                'wineceller.apps.WinecellerConfig',
                'winerecommend.apps.WinerecommendConfig',
+               'review.apps.ReviewConfig',
                'common.apps.CommonConfig']
 
 SYSTEM_APPS = [
@@ -193,7 +194,7 @@ TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
-USE_TZ = True
+#USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

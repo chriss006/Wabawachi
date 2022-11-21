@@ -4,6 +4,7 @@ from rest_framework import status
 from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
+from users.models import User
 
 client = MongoClient("3.38.57.203:27017")
 db = client['winedb']
@@ -64,7 +65,7 @@ class SearchDetailView(APIView):
 
         # 검색어
         fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
-        wine = db.winedb.find_one( {'wine_id':wine_id}, fields)
+        wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
 
     
         detail_serializer= WineDetailSerializer(data=wine)
@@ -77,12 +78,15 @@ class SearchDetailView(APIView):
     def post(self, request, wine_id):
         
         fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
-        wine = db.winedb.find_one( {'wine_id':wine_id}, fields)
+        wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
         
-        kname = wine['kname']
-        wine_id = wine['wine_id']
+        data={}
+        data['kname'] = wine['kname']
+        data['wine_id'] = wine['wine_id']
+        data['user'] =User.objects.get(username = request.data.get('username')).pk
         
-        save_serializer = WineSearchSaveSerialzier(data=[kname,wine_id])
+        
+        save_serializer = WineSearchSaveSerialzier(data=data)
         
         if save_serializer.is_valid():
             Wine = save_serializer.save()
