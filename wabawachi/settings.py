@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-qyh!*j1o384oq^df9b2((qxsb%n4%xa-l2nt*k&_+y%xy!f58k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','3.38.57.203', ]
+ALLOWED_HOSTS = ['127.0.0.1','13.125.18.129', ]
 
 
 # Application definition
@@ -159,7 +159,7 @@ DATABASES = {
         },
         'NAME': 'winedb',
         'CLIENT': {
-            'host': '3.38.57.203',
+            'host': '13.125.18.129',
             'port': 27017,
             'username': 'chriss',
             'password': "1234",

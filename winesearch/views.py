@@ -9,7 +9,7 @@ from pymongo import MongoClient
 from users.models import User
 import jwt
 
-client = MongoClient("3.38.57.203:27017")
+client = MongoClient("mongodb://chriss:1234@13.125.18.129:27017")
 db = client['winedb']
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from pymongo import MongoClient
-client = MongoClient("3.38.57.203:27017")
+client = MongoClient("mongodb://chriss:1234@13.125.18.129:27017")
 db = client['winedb']
 
 
