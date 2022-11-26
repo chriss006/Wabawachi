@@ -17,10 +17,6 @@ class SearchView(APIView):
 
         origin_search = request.GET.get('search')
 
-        if not origin_search:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-            data={'message': 'search word param is missing'})
-
         if origin_search.encode().isalpha():
             # 영어일 때, 띄어쓰기 유지            
             search_word = origin_search
@@ -29,6 +25,10 @@ class SearchView(APIView):
             sl = list(origin_search.split())
             search_word = ''.join(sl)
 
+        if not search_word:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+            data={'message': 'search word param is missing'})
+            
         docs = es.search(
             index='wine_basket_search_engine',
             body = {
