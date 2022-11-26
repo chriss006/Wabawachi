@@ -215,6 +215,7 @@ CORS_ORIGIN_WHITELIST = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

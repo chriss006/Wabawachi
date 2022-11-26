@@ -12,8 +12,7 @@ db = client['winedb']
 
 class SearchView(APIView):
     def get(self, request):
-        es = Elasticsearch(['https://search-waba-cgvedgrfkpn7eoswsulfst47y4.ap-northeast-1.es.amazonaws.com'],
-                           http_auth=('sesac', 'Winebasket1!'))
+        es = Elasticsearch([{'host':'localhost', 'port':'9200'}])
 
         origin_search = request.GET.get('search')
 
@@ -33,36 +32,72 @@ class SearchView(APIView):
             index='wine_basket_search_engine',
             body = {
                 "size": 50,
-                    "query": {
+                  "query": {
                     "multi_match" : {
-                        "query": search_word
+                        "query": search_word,
+                        "fuzziness": "auto",
+                        "fields": ["ename", "kname", "knameNgram", 
+                        "knameNgramEdge", "knameNgramEdgeBack", "kr_concat"]
                     }
-                    }
+                  }
             }
         )
+
         data_list = []
         for data in docs['hits']['hits']:
             data_list.append(data.get('_source'))
         
         # 출력되는 데이터 없으면 data_list는 빈 리스트가 된다
+        
         if len(data_list) == 0:
-            docs = es.search(
-                        index='wine_basket_search_engine',
-                        body = {
-                                "size": 50,
-                                "query": {
-                                "multi_match" : {
-                                    "query": search_word,
-                                    "fuzziness": "auto"
-                                        }
-                                    }
+            # 영한 변환 검색 실시
+            docs_ek = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "multi_match" : {
+                                "query": search_word,
+                                "analyzer": "eng2kor_analyzer"
+                            }
+                        }
+                    }
+                )
+            # 한영 변환 검색 실시
+            docs_ke = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "multi_match" : {
+                                "query": search_word,
+                                "analyzer": "kor2eng_analyzer"
+                            }
+                        }
+                    }
+                )
+            # 초성 변환 검색 실시
+            docs_chosung = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "match" : {
+                                "knameChosung": {
+                                    "query": search_word
                                 }
-                            )
-            for data in docs['hits']['hits']:
-                data_list.append(data.get('_source'))
-            
+                            }
+                        }
+                    }
+                )
 
-                    
+            for data in docs_ek['hits']['hits']:
+                data_list.append(data.get('_source'))
+            for data in docs_ke['hits']['hits']:
+                data_list.append(data.get('_source'))
+            for data in docs_chosung['hits']['hits']:
+                data_list.append(data.get('_source'))
+
         return Response(data_list)
 
       
