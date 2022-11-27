@@ -10,7 +10,7 @@ from wineceller.models import WineCeller
 from review.models import Review
 import jwt
 
-client = MongoClient("mongodb://chriss:1234@13.125.18.129:27017")
+client = MongoClient("mongodb://chriss:1234@3.38.2.131:27017")
 db = client['winedb']
 
 
