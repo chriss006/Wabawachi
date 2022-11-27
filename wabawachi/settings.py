@@ -142,7 +142,7 @@ DATABASES = {
     'NAME': 'wabawachi',
     'USER': 'dbmasteruser',
     'PASSWORD': '19791127',
-    'HOST': 'ls-c6d1cb46d265bfb5292f2755cdcb732ed63b1a8d.cfqsxx6c5aby.ap-northeast-2.rds.amazonaws.com',
+    'HOST': 'ls-0809802e71978c5ecf1d28dedbba1700ad5d43c4.cfqsxx6c5aby.ap-northeast-2.rds.amazonaws.com',
     'PORT': '5432',
     },
     'wine_db': {

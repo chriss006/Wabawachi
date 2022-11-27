@@ -6,8 +6,8 @@ from common.models import CommonModel
 
 class Wine(models.Model):
     
+    wine_id = models.PositiveIntegerField(null=False, blank=False, default=0, unique=True)
     wine_picture = models.URLField(null=False, blank=False)
-    wine_id = models.IntegerField(null=False, blank=False, default=0)
     kname = models.CharField('와인명', max_length=100, null=False, blank=False)
     ename = models.CharField('winename', max_length=100, null=False, blank=False)
     winetype = models.CharField('winetype', max_length=10, null=False, blank=False)
@@ -20,9 +20,6 @@ class Wine(models.Model):
     tannic = models.IntegerField('타닌감')
     notes_list =ArrayField(models.CharField(max_length=20), blank=True, default=list)  
     food_list = ArrayField(models.CharField(max_length=20), blank=True, default=list)  
-    have_tried= models.BooleanField('먹어본 와인', null=False, blank=False, default=False )
-    is_liked = models.BooleanField('찜한 와인',null=False, blank=False, default=False )
-
 
 
     def __str__(self):
@@ -30,8 +27,9 @@ class Wine(models.Model):
 
 
 class WineCeller(CommonModel):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='winesellers')
-    wine = models.ManyToManyField(Wine, related_name='winesellers')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=False, unique=True,related_name='winecellers')
+    wine_id = models.IntegerField(null=True, blank=True)
+
     
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self)->str:

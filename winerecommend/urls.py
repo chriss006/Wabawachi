@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
 
-    path('/similar/<int:wine_id>', views.SimilarWineListView().as_view())
+    path('/similar_all/<int:wine_id>', views.SimilarWineListView().as_view())
 
 
 ]

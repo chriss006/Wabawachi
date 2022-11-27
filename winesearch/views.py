@@ -6,7 +6,8 @@ from wabawachi.settings import SECRET_KEY
 from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
-from users.models import User
+from wineceller.models import WineCeller
+from review.models import Review
 import jwt
 
 client = MongoClient("mongodb://chriss:1234@13.125.18.129:27017")
@@ -16,41 +17,91 @@ db = client['winedb']
 class SearchView(APIView):
 
     def get(self, request):
-        es = Elasticsearch(['https://search-waba-cgvedgrfkpn7eoswsulfst47y4.ap-northeast-1.es.amazonaws.com'],
-                           http_auth=('sesac', 'Winebasket1!'))
+        es = Elasticsearch([{'host':'localhost', 'port':'9200'}])
+        search_word_0 = request.GET.get('search')
+        if search_word_0.encode().isalpha():
+            search_word = search_word_0
+        else:
+            sl = list(search_word_0.split())
+            search_word = ''.join(sl)
 
-        origin_search = request.GET.get('search')
-
-        if not origin_search:
+        if not search_word:
             return Response(status=status.HTTP_400_BAD_REQUEST,
             data={'message': 'search word param is missing'})
-
-        if origin_search.encode().isalpha():
-            # 영어일 때, 띄어쓰기 유지            
-            search_word = origin_search
-        else:
-            # 한글일 때, 띄어쓰기 제거
-            sl = list(origin_search.split())
-            search_word = ''.join(sl)
 
         docs = es.search(
             index='wine_basket_search_engine',
             body = {
                 "size": 50,
-                    "query": {
+                  "query": {
                     "multi_match" : {
-                        "query": search_word
+                        "query": search_word,
+                        "fuzziness": "auto",
+                        "fields": ["ename", "kname", "knameNgram", 
+                        "knameNgramEdge", "knameNgramEdgeBack", "kr_concat"]
                     }
-                    }
+                  }
             }
         )
+
         data_list = []
         for data in docs['hits']['hits']:
             data_list.append(data.get('_source'))
-            
+        
+        # 출력되는 데이터 없으면 data_list는 빈 리스트가 된다
+        
+        if len(data_list) == 0:
+            # 영한 변환 검색 실시
+            docs_ek = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "multi_match" : {
+                                "query": search_word,
+                                "analyzer": "eng2kor_analyzer"
+                            }
+                        }
+                    }
+                )
+            # 한영 변환 검색 실시
+            docs_ke = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "multi_match" : {
+                                "query": search_word,
+                                "analyzer": "kor2eng_analyzer"
+                            }
+                        }
+                    }
+                )
+            # 초성 변환 검색 실시
+            docs_chosung = es.search(
+                index='wine_basket_search_engine',
+                body = {
+                    "size": 5,
+                        "query": {
+                            "match" : {
+                                "knameChosung": {
+                                    "query": search_word
+                                }
+                            }
+                        }
+                    }
+                )
 
-                    
+            for data in docs_ek['hits']['hits']:
+                data_list.append(data.get('_source'))
+            for data in docs_ke['hits']['hits']:
+                data_list.append(data.get('_source'))
+            for data in docs_chosung['hits']['hits']:
+                data_list.append(data.get('_source'))
+
         return Response(data_list)
+    
+    
 
       
     
@@ -87,17 +138,30 @@ class SearchDetailView(APIView):
         
         
 
-
 class AddWineCellerView(APIView):
-    def post(self, request):
-
-        detail_serializer = WineDetailSerializer(data=request.data)
+    
+    def post(self, request, wine_id):
         
-        if detail_serializer.is_valid():
-            Wine = detail_serializer.save()
-            return Response(detail_serializer.data)
-        else:
-            return Response(detail_serializer.errors)
+        try:
+            request.POST._mutable = True
+            #user
+            access = request.COOKIES['access']
+            payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
+            pk = payload.get('user_id')    
+            #wineceller
+            if not WineCeller.objects.filter(owner_id=pk).exists():
+                WineCeller.objects.create(owner_id=pk)
+            #Review
+            assessment = request.data.get('assessment')
+            date = request.data.get('date')
+            hashtag = request.data.get('hashtag')
+            WineCeller.objects.update(owner_id=pk, wine_id=wine_id)
+            review = Review.objects.create(user_id=pk, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag)
+            review.save()
+            return Response({'message':'WINE_ADDED'})
+
+        except KeyError:
+            return Response({"message": "KEY_ERROR"}, status=400)
             
 
  
