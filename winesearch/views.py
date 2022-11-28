@@ -120,8 +120,19 @@ class SearchDetailView(APIView):
         data['wine_id'] = wine['wine_id']
         data['user'] = pk
 
+        save_serializer = WineSearchSaveSerialzier(data=data)
+        detail_serializer= WineDetailSerializer(data=wine)
         
-        return Response(wine)
+        if save_serializer.is_valid():
+            save_serializer.save()
+            print(save_serializer.data)
+        else:
+            return Response(save_serializer.errors)
+            
+        if detail_serializer.is_valid() :
+            return Response({'wine_detail':detail_serializer.data})
+        else:
+            return Response(detail_serializer.errors)
         
         
         

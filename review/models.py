@@ -13,7 +13,7 @@ class Review(CommonModel):
     #user
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='review')
     #와인
-    wine_id = models.IntegerField(null=False, blank=False, unique=True, default=0)
+    wine_id = models.IntegerField(null=False, blank=False, default=0)
     #마신날짜
     date = models.DateField(blank=False, null=False,default=datetime.date.today)
     #선호도 평가
