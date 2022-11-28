@@ -1,6 +1,5 @@
 from django.db import models
 from users.models import User
-from wineceller.models import Wine
 from datetime import datetime
 class Winesearch(models.Model):
     kname = models.CharField(max_length=300, null=False, blank=False, default='')

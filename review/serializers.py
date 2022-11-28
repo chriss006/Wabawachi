@@ -8,3 +8,10 @@ class ReviewSaveSerialzier(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+class ReviewDetailSerialzier(serializers.ModelSerializer):
+    
+    
+    class Meta:
+        model = Review
+        fields = ['user','wine_id','assessment','hashtag' ]

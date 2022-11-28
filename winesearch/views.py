@@ -121,19 +121,7 @@ class SearchDetailView(APIView):
         data['user'] = pk
 
         
-        save_serializer = WineSearchSaveSerialzier(data=data)
-        detail_serializer= WineDetailSerializer(data=wine)
-        
-        if save_serializer.is_valid():
-            save_serializer.save()
-            print(save_serializer.data)
-        else:
-            return Response(save_serializer.errors)
-            
-        if detail_serializer.is_valid() :
-            return Response({'wine_detail':detail_serializer.data})
-        else:
-            return Response(detail_serializer.errors)
+        return Response(wine)
         
         
         
@@ -149,18 +137,18 @@ class AddWineCellerView(APIView):
             payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
             pk = payload.get('user_id')    
             #wineceller
-            if not WineCeller.objects.filter(owner_id=pk).exists():
-                WineCeller.objects.create(owner_id=pk)
+      
+            WineCeller.objects.create(owner_id=pk, wine_id=wine_id).save()
+            
             #Review
             assessment = request.data.get('assessment')
             date = request.data.get('date')
             hashtag = request.data.get('hashtag')
-            WineCeller.objects.update(owner_id=pk, wine_id=wine_id)
             review = Review.objects.create(user_id=pk, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag)
             review.save()
             return Response({'message':'WINE_ADDED'})
 
-        except KeyError:
+        except KeyError: 
             return Response({"message": "KEY_ERROR"}, status=400)
             
 

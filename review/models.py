@@ -1,7 +1,6 @@
 from django.db import models
 from common.models import CommonModel
 from users.models import User
-from wineceller.models import Wine
 from django.contrib.postgres.fields import ArrayField 
 import datetime
 # Create your models here.
