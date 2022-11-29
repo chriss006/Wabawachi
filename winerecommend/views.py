@@ -4,6 +4,7 @@ from rest_framework import status
 from wabawachi.settings import SECRET_KEY
 from .recommend import *
 from .trending import trending_list
+from review.models import Review
 from winesearch.models import Winesearch
 from wineceller.models import WineCeller
 from pymongo import MongoClient
@@ -49,6 +50,24 @@ class SimilarWineCellerListView(APIView):
                 wine_list= recommend_similar_wine(input_vec, docs, type='celler')
                 
                 return Response(list(wine_list))
+        
+class HashtagRecommendListView(APIView):
+        def get(self, request):
+                
+                #user
+                access = request.COOKIES['access']
+                payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
+                pk = payload.get('user_id') 
+                
+                if not Review.objects.filter(user_id=pk).exists():
+                        raise ModuleNotFoundError('WINECELLER DOES NOT EXISTS')
+                
+                wines =[]
+                for wine in Review.objects.filter(user_id=pk, assessment='좋음'):
+                        wines.append(wine.wine_id)                        
+ 
+                wine_data = get_attributes_hash(wines)
+                return Response(list(wine_data))
                 
                 
 class TrendingWineListView(APIView):

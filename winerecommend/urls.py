@@ -5,6 +5,7 @@ urlpatterns = [
 
     path('/similar_all', views.SimilarWineAllListView().as_view()),
     path('/similar_celler', views.SimilarWineCellerListView.as_view()),
-    path('/trending_wine', views.TrendingWineListView.as_view())
+    path('/trending_wine', views.TrendingWineListView.as_view()),
+    path('/hashtag_recommend', views.HashtagRecommendListView.as_view())
 
 ]

@@ -10,6 +10,7 @@ def preprocess_doc():
     doc = pd.DataFrame(docs, columns=['wine_id','sweet','acidic','body','tannic'])
     return doc
 
+#similar wine celler 
 def get_attributes(wine_id, wines):
     fields = {'_id':0, 'wine_id':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 }
     input_vec = list(db.wine_db.find_one({'wine_id':wine_id},fields).values())
@@ -61,3 +62,10 @@ def recommend_similar_wine(input_vec, doc, type):
     else:
         wine_list = db.wine_db.find({'wine_id':{'$in':id_list}},fields)
         return wine_list
+
+#hashtag recommendation
+def get_attributes_hash(id_list):
+    fields = {'_id':0, 'wine_id':1, 'kr_country':1,'note_cat':1 }
+    wine_data = list(db.recommend_db.find({'wine_id':{'$in':id_list}},fields))
+    return wine_data
+    

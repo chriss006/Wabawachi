@@ -20,7 +20,7 @@ docs = es.search(
                 {"range": {
                 "@timestamp": {
                     "gte": "now-1M",
-                    "lte": "now"
+                    "lte": "now+1h"
                 }
                 }
                 }
