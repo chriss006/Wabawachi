@@ -10,13 +10,13 @@ class WineDetailSerializer(serializers.Serializer):
     winetype = serializers.CharField( max_length=10)
     kr_country =serializers.CharField( max_length=50)
     kr_region = serializers.CharField( max_length=50)
-    kr_grape_list = serializers.ListField(child=serializers.CharField(max_length=20))  
+    kr_grape_list = serializers.ListField(child=serializers.CharField(max_length=20), required=False)  
     sweet = serializers.IntegerField()
     acidic= serializers.IntegerField()
     body = serializers.IntegerField()
     tannic = serializers.IntegerField()
-    notes_list =serializers.ListField(child=serializers.CharField(max_length=20) )  
-    food_list = serializers.ListField(child=serializers.CharField(max_length=20))  
+    notes_list =serializers.ListField(child=serializers.CharField(max_length=20), required=False, read_only=True)  
+    food_list = serializers.ListField(child=serializers.CharField(max_length=20), required=False)  
 
 class WineSearchSaveSerialzier(serializers.ModelSerializer):
     
@@ -24,5 +24,5 @@ class WineSearchSaveSerialzier(serializers.ModelSerializer):
         model = Winesearch
         fields = '__all__'
 
-       
+    
 
