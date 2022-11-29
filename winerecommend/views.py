@@ -3,9 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from wabawachi.settings import SECRET_KEY
 from .recommend import *
+from .trending import trending_list
 from winesearch.models import Winesearch
 from wineceller.models import WineCeller
+from pymongo import MongoClient
 import jwt
+
+
+client = MongoClient("mongodb://chriss:1234@3.38.2.131:27017")
+db = client['winedb']
 
 class SimilarWineAllListView(APIView):
         def get(self, request):
@@ -45,6 +51,10 @@ class SimilarWineCellerListView(APIView):
                 return Response(list(wine_list))
                 
                 
-                      
+class TrendingWineListView(APIView):
+        def get(self, request):
+                wine_list = trending_list()
                 
-                
+                fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1}
+                trending_wines = db.wine_db.find( {'wine_id':{'$in':wine_list}}, fields)
+                return Response(list(trending_wines))
