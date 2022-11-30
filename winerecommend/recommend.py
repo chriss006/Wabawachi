@@ -20,21 +20,6 @@ def get_attributes(wine_id, wines):
     
     return input_vec, docs
 
-def find_similar_wine(input_vec, doc):
-    dist={}
-
-    for i in doc['wine_id']:
-        if input_vec[0][0]!=i: 
-            temp = doc.loc[i,['sweet','acidic','body','tannic']]
-            dist[i]=np.sum(np.square(input_vec[0][1:] - temp.to_numpy()))
-
-    if len(dist)>=5:
-        dist = dict(sorted(dist.items(), key= lambda x:x[1])[:10])
-    else:
-        dist = dict(sorted(dist.items(), key= lambda x:x[1]))
-    
-    return list(dist.keys())
-
 def find_similar_wine_celler(input_vec, docs):
     dist={}
 
@@ -49,6 +34,22 @@ def find_similar_wine_celler(input_vec, docs):
         dist = dict(sorted(dist.items(), key= lambda x:x[1]))
 
     return(list(dist.keys()))
+
+#simialr wine all 
+def find_similar_wine(input_vec, doc):
+    dist={}
+
+    for i in doc['wine_id']:
+        if input_vec[0][0]!=i: 
+            temp = doc.loc[i,['sweet','acidic','body','tannic']]
+            dist[i]=np.sum(np.square(input_vec[0][1:] - temp.to_numpy()))
+
+    if len(dist)>=5:
+        dist = dict(sorted(dist.items(), key= lambda x:x[1])[:10])
+    else:
+        dist = dict(sorted(dist.items(), key= lambda x:x[1]))
+    
+    return list(dist.keys())
 
 
 def recommend_similar_wine(input_vec, doc, type):
@@ -116,11 +117,19 @@ def get_foodmatchwine():
     '블루치즈':['블루치즈'],}
     
     foodtype= random.sample(list(food_dic.keys()),2)
-    skipsize = random.randint(1,5)
-    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1}
-    wine_data1 = list(db.wine_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[0]])}},fields).skip(skipsize).limit(10))
-    wine_data2 = list(db.wine_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[1]])}},fields).skip(skipsize).limit(10))
-    return foodtype, wine_data1, wine_data2
+    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
+    
+    wine_list1, wine_list2 = [], []
+    wine_data1 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[0]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
+    wine_data2 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[1]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
+    for wine in wine_data1:
+        wine_list1.append(wine['wine_id']) 
+    for wine in wine_data2:
+        wine_list2.append(wine['wine_id'])
+    wine_list1 = list(db.wine_db.find({'wine_id':{'$in':wine_list1}},fields))
+    wine_list2 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
+    
+    return foodtype, wine_list1, wine_list2
 
 def get_foodscript(foodtype):
     if foodtype== '해산물':
