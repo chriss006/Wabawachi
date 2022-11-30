@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from review.models import Review
+from sklearn.metrics.pairwise import cosine_similarity
 import random, re
 from pymongo import MongoClient
 client = MongoClient("mongodb://chriss:1234@3.38.2.131:27017")
@@ -65,43 +67,6 @@ def recommend_similar_wine(input_vec, doc, type):
         wine_list = db.wine_db.find({'wine_id':{'$in':id_list}},fields)
         return wine_list
 
-#hashtag recommendation
-def get_hashtag(id_list):
-    fields = {'_id':0, 'wine_id':1, 'kr_country':1,'note_cat':1 }
-    wine_data = list(db.recommend_db.find({'wine_id':{'$in':id_list}},fields))
-    country = wine_data[3]['kr_country']
-    notes = wine_data[3]['note_cat']
-    
-    note_dic = {"오크 숙성": [ '낯선', '미지의','모험적인','은은한', '숲속을 걷는 듯한', '중후한', '여운이 긴'],
-    "붉은과일": ['설레는', '두근거리는', '기대되는', '상큼한', '사랑스러운', '풋풋한', '상큼한'],
-    "흙/기타": ['이색적인', '잊지못할', '인생에 한번 쯤', '숲속을 걷는 듯한', '은은한'],
-    "꽃" :[' 깨끗한', '몽환적인', '청량한', '싱그러운', '플로럴한', '정원을 걷는 듯한'],
-    "열대과일" : ['안정적인', '편안한', '따뜻한'],
-    "검은과일": ['성숙한', '고전적인', '야성적인', '귀족적인', '클래식한', '깊은 풍미의'],
-    "나무과일": ['행복한', '풍요로운', '여유있는'], 
-    "감귤류" : ['신나는', '발랄한', '즐거운'], 
-    "향신료" : ['특별한', '특이한', '색다른'],
-    "일반숙성": ['매혹적인', '이국적인', '진지한'],
-    "채소/허브": ['새벽느낌의', '풋풋한', '싱그러운','생동감있는','신비로운','숲속을 걷는 듯한', '자연적인', '독특한']}
-    
-    country_dic=  {'A':['패셔너블한','섬세한','열정적인','친근한'],
-             'B':['진취적인','강렬한','긍정적인','낙천적인'],
-             'C':['도전적인','모험적인']}
-    
-    if country in ['프랑스,' '이탈리아']:
-         country = random.choice(country_dic['A'])
-    elif country in ['미국','스페인']:
-        country = random.choice(country_dic['B']) 
-    else: country = random.choice(country_dic['C'])
-    
-    notes_list=[]
-    notes1= re.compile('[^ㄱ-ㅣ가-힣/+]').sub('', notes[0])
-    notes2= re.compile('[^ㄱ-ㅣ가-힣/+]').sub('', notes[1])
-    notes_list.append(random.choice(note_dic[notes1]))
-    notes_list.append(random.choice(note_dic[notes2]))
-    
-    return country, notes_list
-
 #food recommend
 def get_foodmatchwine():
     food_dic = {
@@ -155,7 +120,60 @@ def get_foodscript(foodtype):
     return script
             
     
+# hashtag recommend
+    
+def hashtag_similar_wine(user_id):
+    cat_matrix = pd.read_csv('winerecommend/cat_matrix.csv')
+    wine_sim = cosine_similarity(cat_matrix, cat_matrix)
+    wine_sim_df = pd.DataFrame(data=wine_sim, index=cat_matrix.index,columns=cat_matrix.index)
+    
+    review= Review.objects.filter(user_id=user_id, assessment='좋음')[random.randint(1,50)]
+    review_id, wine_id= review.id, review.wine_id
+    id_list = list(wine_sim_df[review_id].sort_values(ascending=False)[1:11].index)
+    
+    wine_list=[]
+    for wine in Review.objects.filter(id__in= id_list)[:10]:
+        wine_list.append(wine.wine_id)
         
-    
+    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
+    wine_data = list(db.wine_db.find({'wine_id':{'$in':wine_list}},fields))
 
+    return wine_id, wine_data
+
+#hashtag recommendation
+def get_hashtag_script(wine_id):
+    fields = {'_id':0, 'wine_id':1, 'kr_country':1,'note_cat':1 }
+    wine_data = db.recommend_db.find_one({'wine_id':wine_id},fields)
+    country = wine_data['kr_country']
+    notes = wine_data['note_cat']
     
+    note_dic = {"오크숙성": [ '낯선', '모험적인','은은한', '숲속을 걷는 듯한', '중후한', '여운이 긴'],
+    "붉은과일": ['설레는', '두근거리는', '상큼한', '사랑스러운', '풋풋한', '상큼한'],
+    "흙/기타": ['이색적인', '잊지못할', '인생에 한번 쯤', '숲속을 걷는 듯한', ],
+    "꽃" :[' 깨끗한', '몽환적인', '청량한', '싱그러운', '플로럴한', '정원을 걷는 듯한'],
+    "열대과일" : ['안정적인', '편안한', '따뜻한'],
+    "검은과일": ['성숙한', '고전적인', '야성적인', '귀족적인', '클래식한', '깊은 풍미의'],
+    "나무과일": ['행복한', '풍요로운', '여유있는'], 
+    "감귤류" : ['신나는', '발랄한', '즐거운'], 
+    "향신료" : ['특별한', '특이한', '색다른'],
+    "일반숙성": ['매혹적인', '이국적인', '진지한'],
+    "채소/허브": ['새벽느낌의', '풋풋한', '싱그러운','생동감있는', '자연적인', '독특한'],
+    '없음': ['미지의','기대되는', '신비로운'],}
+    
+    country_dic=  {'A':['패셔너블한','섬세한','열정적인','친근한'],
+             'B':['진취적인','강렬한','긍정적인','낙천적인'],
+             'C':['도전적인','모험적인']}
+    
+    if country in ['프랑스,' '이탈리아']:
+         country = random.choice(country_dic['A'])
+    elif country in ['미국','스페인']:
+        country = random.choice(country_dic['B']) 
+    else: country = random.choice(country_dic['C'])
+    
+    notes_list=[]
+    notes1= re.compile('[^ㄱ-ㅣ가-힣/+]').sub('', notes[0])
+    notes_list.append(random.choice(note_dic[notes1]))
+    #notes2= re.compile('[^ㄱ-ㅣ가-힣/+]').sub('', notes[1]) if len(notes)> 1 else 
+    #notes_list.append(random.choice(note_dic[notes2]))
+    
+    return country, notes_list

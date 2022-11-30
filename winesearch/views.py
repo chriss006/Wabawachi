@@ -99,7 +99,7 @@ class SearchView(APIView):
             for data in docs_chosung['hits']['hits']:
                 data_list.append(data.get('_source'))
 
-        return Response(data_list)
+        return Response(data_list[:5])
     
     
 

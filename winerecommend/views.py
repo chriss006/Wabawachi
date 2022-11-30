@@ -66,8 +66,10 @@ class HashtagRecommendListView(APIView):
                 for wine in Review.objects.filter(user_id=pk, assessment='좋음'):
                         wines.append(wine.wine_id)                        
  
-                wine_data, notes = get_hashtag(wines)
-                return Response(f'#{wine_data}, #{notes[0]}, #{notes[1]} 와인을 좋아하는 당신에게')
+                wine_id, wines = hashtag_similar_wine(pk)
+                country, notes = get_hashtag_script(wine_id)
+                return Response({'script': f'#{country}, #{notes[0]} 와인을 좋아하는 당신에게',
+                                 'wine_list' :wines,})
                 
                 
 class TrendingWineListView(APIView):
