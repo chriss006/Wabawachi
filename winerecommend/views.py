@@ -66,8 +66,8 @@ class HashtagRecommendListView(APIView):
                 for wine in Review.objects.filter(user_id=pk, assessment='좋음'):
                         wines.append(wine.wine_id)                        
  
-                wine_data = get_attributes_hash(wines)
-                return Response(list(wine_data))
+                wine_data, notes = get_hashtag(wines)
+                return Response(f'#{wine_data}, #{notes[0]}, #{notes[1]} 와인을 좋아하는 당신에게')
                 
                 
 class TrendingWineListView(APIView):
@@ -77,3 +77,15 @@ class TrendingWineListView(APIView):
                 fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1}
                 trending_wines = db.wine_db.find( {'wine_id':{'$in':wine_list}}, fields)
                 return Response(list(trending_wines))
+        
+
+class FoodMatchWineListView(APIView):
+        def get(self, request):
+                foodtype, wine_list1, wine_list2 = get_foodmatchwine()
+                script1 = get_foodscript(foodtype[0])
+                script2 = get_foodscript(foodtype[1])
+                
+                return Response({'foodscript1':script1, 'wine_list1':wine_list1,'foodscript2':script2, 'wine_list2':wine_list2 })
+
+                
+        

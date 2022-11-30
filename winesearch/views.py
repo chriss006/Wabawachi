@@ -106,6 +106,17 @@ class SearchView(APIView):
       
     
 class SearchDetailView(APIView):
+    
+    def get(self, request, wine_id):
+        fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
+        wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
+        
+        detail_serializer= WineDetailSerializer(data=wine)
+        
+        if detail_serializer.is_valid() :
+            return Response({'wine_detail':detail_serializer.data})
+        else:
+            return Response(detail_serializer.errors)
         
     def post(self, request, wine_id):
         
