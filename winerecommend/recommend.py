@@ -127,9 +127,22 @@ def hashtag_similar_wine(user_id):
     wine_sim = cosine_similarity(cat_matrix, cat_matrix)
     wine_sim_df = pd.DataFrame(data=wine_sim, index=cat_matrix.index,columns=cat_matrix.index)
     
-    review= Review.objects.filter(user_id=user_id, assessment='좋음')[random.randint(1,50)]
-    review_id, wine_id= review.id, review.wine_id
-    id_list = list(wine_sim_df[review_id].sort_values(ascending=False)[1:11].index)
+    total = Review.objects.filter(user_id=user_id).count()
+    review_id = random.sample(range(total), 10)
+    assessment_value = {'좋음': 1, '보통': 0.8, '나쁨': 0.5}
+    score_dict = {}
+
+    for i in review_id:
+        # cos 유사도 구하기
+        cos = dict(wine_sim_df[i].sort_values(ascending=False)[1:11])
+        # 유사도에 assessment(평가)기반의 scoring
+        for idx, val in cos.items():
+            if idx in score_dict: score_dict[idx] += (val*assessment_value[Review.objects.get(id=i).assessment])
+            else: score_dict[idx] = (val*assessment_value[Review.objects.get(id=i).assessment])
+
+    sorted_score_dict = dict(sorted(score_dict.items(), key = lambda item: item[1], reverse= True))   
+
+    id_list = list(sorted_score_dict.keys())[:10]
     
     wine_list=[]
     for wine in Review.objects.filter(id__in= id_list)[:10]:
@@ -138,10 +151,11 @@ def hashtag_similar_wine(user_id):
     fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
     wine_data = list(db.wine_db.find({'wine_id':{'$in':wine_list}},fields))
 
-    return wine_id, wine_data
+    return wine_list, wine_data
 
 #hashtag recommendation
-def get_hashtag_script(wine_id):
+def get_hashtag_script(wine_list):
+    wine_id = random.choice(wine_list)
     fields = {'_id':0, 'wine_id':1, 'kr_country':1,'note_cat':1 }
     wine_data = db.recommend_db.find_one({'wine_id':wine_id},fields)
     country = wine_data['kr_country']
