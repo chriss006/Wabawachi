@@ -12,9 +12,9 @@ client = MongoClient("mongodb://chriss:1234@3.38.2.131:27017")
 db = client['winedb']
 
 class WineCellerView(APIView):
-    def get(self,request):
+    def post(self,request):
         #user auth
-        pk = request.GET.get('userid',None)
+        pk = request.data.get('user_id')
         
         #wine celler wine
         if not WineCeller.objects.filter(owner_id=pk).exists():
@@ -31,13 +31,10 @@ class WineCellerView(APIView):
 
 class RecentCollectedWineView(APIView):
     
-    def get(self,request):   
+    def post(self,request):   
         
         #user auth
-        access = request.COOKIES['access']
-        payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-        pk = payload.get('user_id') 
-
+        pk = request.data.get('user_id')
                 
         #wine celler wine
         if not WineCeller.objects.filter(owner_id=pk).exists():
@@ -54,12 +51,10 @@ class RecentCollectedWineView(APIView):
         return Response(list(wine_list))
     
 class WineCellerDetailView(APIView):
-    def get(self, request, wine_id):
+    def post(self, request, wine_id):
            
         #user auth
-        access = request.COOKIES['access']
-        payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-        pk = payload.get('user_id') 
+        pk = request.data.get('user_id') 
         #review
         review = ReviewDetailSerialzier(Review.objects.get(wine_id=wine_id))
         #wine
@@ -71,11 +66,9 @@ class WineCellerDetailView(APIView):
         
 
 class WineCellerTotalView(APIView):
-    def get(self, request):
+    def post(self, request):
         #user auth
-        access = request.COOKIES['access']
-        payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-        pk = payload.get('user_id') 
+        pk = request.data.get('user_id')
         
         wines =[]
         for wine in WineCeller.objects.filter(owner_id=pk):

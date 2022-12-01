@@ -15,11 +15,9 @@ client = MongoClient("mongodb://chriss:1234@3.38.2.131:27017")
 db = client['winedb']
 
 class SimilarWineAllListView(APIView):
-        def get(self, request):
+        def post(self, request):
                 
-                access = request.COOKIES['access']
-                payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-                pk = payload.get('user_id') 
+                pk = request.data.get('user_id')
                 
                 wine_id = Winesearch.objects.filter(user_id=pk)[0].wine_id
     
@@ -30,12 +28,10 @@ class SimilarWineAllListView(APIView):
                 return Response(list(wine_list))
 
 class SimilarWineCellerListView(APIView):
-        def get(self, request):
+        def post(self, request):
                 
                 #user
-                access = request.COOKIES['access']
-                payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-                pk = payload.get('user_id') 
+                pk = request.data.get('user_id')
                 #wine_id
                 wine_id = Winesearch.objects.filter(user_id=pk)[0].wine_id
                 
@@ -52,12 +48,10 @@ class SimilarWineCellerListView(APIView):
                 return Response(list(wine_list))
         
 class HashtagRecommendListView(APIView):
-        def get(self, request):
+        def post(self, request):
                 
                 #user
-                access = request.COOKIES['access']
-                payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-                pk = payload.get('user_id') 
+                pk = request.data.get('user_id')
                 
                 if not Review.objects.filter(user_id=pk).exists():
                         raise ModuleNotFoundError('WINECELLER DOES NOT EXISTS')
