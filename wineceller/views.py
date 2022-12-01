@@ -37,7 +37,8 @@ class RecentCollectedWineView(APIView):
         access = request.COOKIES['access']
         payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
         pk = payload.get('user_id') 
-        
+
+                
         #wine celler wine
         if not WineCeller.objects.filter(owner_id=pk).exists():
                         raise ModuleNotFoundError('WINECELLER DOES NOT EXISTS')
