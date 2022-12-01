@@ -113,6 +113,7 @@ class SearchDetailView(APIView):
         
         access = request.COOKIES['access']
         payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
+        print(access)
         pk = payload.get('user_id')         
         data={}
         data['kname'] = wine['kname']
