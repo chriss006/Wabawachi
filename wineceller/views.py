@@ -14,9 +14,7 @@ db = client['winedb']
 class WineCellerView(APIView):
     def get(self,request):
         #user auth
-        access = request.COOKIES['access']
-        payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-        pk = payload.get('user_id') 
+        pk = request.GET.get('userid',None)
         
         #wine celler wine
         if not WineCeller.objects.filter(owner_id=pk).exists():
@@ -25,8 +23,11 @@ class WineCellerView(APIView):
         wines =[]
         for wine in WineCeller.objects.filter(owner_id=pk):
                 wines.append(wine.wine_id) 
+                
+        fields = {'_id':0, 'wine_id':1, 'wine_picture':1}
+        wine_list =db.wine_db.find( {'wine_id':{'$in':wines}}, fields)
         
-        return Response({'wine_celler': wines})     
+        return Response({'wine_celler': list(wine_list)})     
 
 class RecentCollectedWineView(APIView):
     

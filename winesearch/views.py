@@ -110,11 +110,9 @@ class SearchDetailView(APIView):
     def get(self, request, wine_id):
         fields = {'_id':0, 'wine_id':1,'wine_picture':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'sweet':1, 'acidic':1, 'body':1, 'tannic':1 ,'winetype':1, 'kr_grape_list':1, 'notes_list':1,'food_list':1 }
         wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
-        
-        access = request.COOKIES['access']
+        access = request.session['cookie'] 
         payload = jwt.decode(access, SECRET_KEY, algorithms=['HS256'])  
-        print(access)
-        pk = payload.get('user_id')         
+        pk = payload.get('user_id')
         data={}
         data['kname'] = wine['kname']
         data['wine_id'] = wine['wine_id']
