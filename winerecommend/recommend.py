@@ -55,7 +55,7 @@ def find_similar_wine(input_vec, doc):
 
 
 def recommend_similar_wine(input_vec, doc, type):
-    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
+    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1,'wine_picture':1 }
     if type =='all':
         id_list = find_similar_wine(input_vec,doc)
     elif type =='celler':
@@ -82,7 +82,7 @@ def get_foodmatchwine():
     '블루치즈':['블루치즈'],}
     
     foodtype= random.sample(list(food_dic.keys()),2)
-    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
+    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, 'wine_picture':1}
     
     wine_list1, wine_list2 = [], []
     wine_data1 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[0]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
@@ -148,7 +148,7 @@ def hashtag_similar_wine(user_id):
     for wine in Review.objects.filter(id__in= id_list)[:10]:
         wine_list.append(wine.wine_id)
         
-    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, }
+    fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, 'wine_picture':1}
     wine_data = list(db.wine_db.find({'wine_id':{'$in':wine_list}},fields))
 
     return wine_list, wine_data

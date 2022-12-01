@@ -44,7 +44,7 @@ class RecentCollectedWineView(APIView):
         for wine in WineCeller.objects.filter(owner_id=pk):
                 wines.append(wine.wine_id) 
         
-        fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1}
+        fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1, 'wine_picture':1}
         wine_list = db.wine_db.find( {'wine_id':{'$in':wines}}, fields)
         
         
@@ -56,9 +56,9 @@ class WineCellerDetailView(APIView):
         #user auth
         pk = request.data.get('user_id') 
         #review
-        review = ReviewDetailSerialzier(Review.objects.get(wine_id=wine_id))
+        review = ReviewDetailSerialzier(Review.objects.get(wine_id=wine_id, user_id=pk))
         #wine
-        fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'winetype':1}
+        fields = {'_id':0, 'wine_picture':1, 'wine_id':1, 'kname':1, 'ename':1, 'winery':1, 'kr_country':1, 'kr_region':1, 'winetype':1}
         wine = db.wine_db.find_one( {'wine_id':wine_id}, fields)
         
         

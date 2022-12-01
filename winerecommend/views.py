@@ -70,7 +70,7 @@ class TrendingWineListView(APIView):
         def get(self, request):
                 wine_list = trending_list()
                 
-                fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1}
+                fields = {'_id':0, 'wine_id':1, 'kname':1, 'ename':1, 'winetype':1, 'wine_picture':1}
                 trending_wines = db.wine_db.find( {'wine_id':{'$in':wine_list}}, fields)
                 return Response(list(trending_wines))
         
