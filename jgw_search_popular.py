@@ -8,25 +8,25 @@ docs = es.search(
     index='wabawachi_logs',
     body = {
         "size": 0,
+        # 조건문
         "query": {
             "bool": {
-            "must": [{
-                "wildcard": {
-                "request_url": {
-                    "value": "/api/v1/winesearch/detail/*"
-                    }
+                "must": [{
+                    "wildcard": {
+                        "request_url": {
+                            "value": "/api/v1/winesearch/detail/*"
+                    }}},
+                    {"range": {
+                        "@timestamp": {
+                            "gte": "now-1M",
+                            "lte": "now"
+                    }}},
+                    {"match": {
+                        "method": "POST"
+                    }}]
                 }
-                }, 
-                {"range": {
-                "@timestamp": {
-                    "gte": "now-1M",
-                    "lte": "now"
-                }
-                }
-                }
-            ]
-            }
         },  
+        # 집계함수
         "aggs": {
             "histogram_aggs": {
             "date_histogram": {
@@ -54,8 +54,8 @@ for datas in docs['aggregations']['histogram_aggs']['buckets']:
         else: score_dict[a] = (b*sqrt(value))
     value += 1
 
-print(score_dict)
+# print(score_dict)
 
 sorted_score_dict = sorted(score_dict.items(), key = lambda item: item[1], reverse= True)
-print('-------------------------------')
+# print('-------------------------------')
 print(sorted_score_dict[:10])
