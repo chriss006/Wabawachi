@@ -144,16 +144,20 @@ class AddWineCellerView(APIView):
         try:
             request.POST._mutable = True
             #user
-            pk = request.data.get('user_id')  
+            owner = request.data.get('user_id')  
             #wineceller
-      
-            WineCeller.objects.create(owner_id=pk, wine_id=wine_id).save()
+            total = WineCeller.objects.count()
+            print(total)
+            if WineCeller.objects.filter( owner_id=owner, wine_id=wine_id).exists():
+                return Response('Wine Alread Exists')
+            else:
+                WineCeller.objects.create(id=total+1, owner_id=owner, wine_id=wine_id).save()
             
             #Review
             assessment = request.data.get('assessment')
             date = request.data.get('date')
             hashtag = request.data.get('hashtag')
-            review = Review.objects.create(user_id=pk, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag)
+            review = Review.objects.create(id=total+1, user_id=owner, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag)
             review.save()
             return Response({'message':'WINE_ADDED'})
 
