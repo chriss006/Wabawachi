@@ -162,7 +162,6 @@ class AddWineCellerView(APIView):
             owner = request.data.get('user_id')  
             #wineceller
             total = WineCeller.objects.count()
-            print(total)
             if WineCeller.objects.filter( owner_id=owner, wine_id=wine_id).exists():
                 return Response('Wine Alread Exists')
             else:
@@ -172,8 +171,8 @@ class AddWineCellerView(APIView):
             assessment = request.data.get('assessment')
             date = request.data.get('date')
             hashtag = request.data.get('hashtag')
-            review = Review.objects.create(id=total+1, user_id=owner, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag)
-            review.save()
+            total_review = Review.objects.count()
+            Review.objects.create(id=total_review+1, user_id=owner, wine_id=wine_id, assessment=assessment, date=date, hashtag=hashtag).save()        
             return Response({'message':'WINE_ADDED'})
 
         except KeyError: 
