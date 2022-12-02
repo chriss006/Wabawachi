@@ -7,6 +7,7 @@ from .serializers import WineDetailSerializer,WineSearchSaveSerialzier
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 from wineceller.models import WineCeller
+from winesearch.models import Winesearch
 from review.models import Review
 import jwt
 
@@ -134,8 +135,22 @@ class SearchDetailView(APIView):
         
 
         
+class RecentSearchedWineView(APIView):
+    def post(self, request):
+                
+        user = request.data.get('user_id')  
         
+        if not Winesearch.objects.get(user_id=user).exists():
+            return Response('최근 검색한 와인이 없습니다.')
         
+        wines = Winesearch.objects.get(user_id=user)
+        wine_id=[]
+        for wine in wines:
+            wine_id.append(wine.wine_id)
+        fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1, 'winetype':1, 'wine_picture':1}
+        wine_list = list(db.wine_db.find( {'wine_id':{'$in':wine_id}}, fields))
+        
+        return Response(wine_list)
 
 class AddWineCellerView(APIView):
     
