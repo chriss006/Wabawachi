@@ -80,20 +80,27 @@ def get_foodmatchwine():
     '경성치즈':['경성치즈', '반경성치즈'],
     '블루치즈':['블루치즈'],}
     
-    foodtype= random.sample(list(food_dic.keys()),2)
+    foodtype= random.sample(list(food_dic.keys()),4)
     fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1,'winetype':1, 'wine_picture':1}
     
-    wine_list1, wine_list2 = [], []
+    wine_list1, wine_list2, wine_list3, wine_list4= [], [], [], []
     wine_data1 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[0]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
     wine_data2 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[1]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
+    wine_data3 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[2]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
+    wine_data4 = list(db.recommend_db.find({'food_list':{'$regex':random.choice(food_dic[foodtype[3]])}},{'_id':0, 'wine_id':1}).skip(3).limit(10))
     for wine in wine_data1:
         wine_list1.append(wine['wine_id']) 
     for wine in wine_data2:
         wine_list2.append(wine['wine_id'])
+    for wine in wine_data3:
+        wine_list3.append(wine['wine_id'])
+    for wine in wine_data4:
+        wine_list4.append(wine['wine_id'])
     wine_list1 = list(db.wine_db.find({'wine_id':{'$in':wine_list1}},fields))
     wine_list2 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
-    
-    return foodtype, wine_list1, wine_list2
+    wine_list3 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
+    wine_list4 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
+    return foodtype, wine_list1, wine_list2, wine_list3, wine_list4
 
 def get_foodscript(foodtype):
     if foodtype== '해산물':

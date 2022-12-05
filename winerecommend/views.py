@@ -77,11 +77,13 @@ class TrendingWineListView(APIView):
 
 class FoodMatchWineListView(APIView):
         def get(self, request):
-                foodtype, wine_list1, wine_list2 = get_foodmatchwine()
+                foodtype, wine_list1, wine_list2, wine_list3, wine_list4 = get_foodmatchwine()
                 script1 = get_foodscript(foodtype[0])
                 script2 = get_foodscript(foodtype[1])
-                
-                return Response({'foodscript1':script1, 'wine_list1':wine_list1,'foodscript2':script2, 'wine_list2':wine_list2 })
+                script3 = get_foodscript(foodtype[3])
+                script4 = get_foodscript(foodtype[4])
+
+                return Response({'foodscript1':script1, 'wine_list1':wine_list1,'foodscript2':script2, 'wine_list2':wine_list2, 'foodscript3':script3, 'wine_list3':wine_list3 ,'foodscript4':script4, 'wine_list4':wine_list4 })
 
                 
         
