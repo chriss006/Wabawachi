@@ -98,8 +98,8 @@ def get_foodmatchwine():
         wine_list4.append(wine['wine_id'])
     wine_list1 = list(db.wine_db.find({'wine_id':{'$in':wine_list1}},fields))
     wine_list2 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
-    wine_list3 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
-    wine_list4 = list(db.wine_db.find({'wine_id':{'$in':wine_list2}},fields))
+    wine_list3 = list(db.wine_db.find({'wine_id':{'$in':wine_list3}},fields))
+    wine_list4 = list(db.wine_db.find({'wine_id':{'$in':wine_list4}},fields))
     return foodtype, wine_list1, wine_list2, wine_list3, wine_list4
 
 def get_foodscript(foodtype):

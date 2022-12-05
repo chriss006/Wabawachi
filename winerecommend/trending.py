@@ -4,48 +4,50 @@ es = Elasticsearch([{'host':'3.38.2.131', 'port':'9200'}])
 
 score_dict = {}
 
-docs = es.search(
-    index='wabawachi_logs',
-    body = {
-        "size": 0,
-        "query": {
-            "bool": {
-            "must": [{
-                "wildcard": {
-                "request_url": {
-                    "value": "/api/v1/winesearch/detail/*"
-                    }
-                }
-                }, 
-                {"range": {
-                "@timestamp": {
-                    "gte": "now-1M",
-                    "lte": "now+1h"
-                }
-                }
-                }
-            ]
-            }
-        },  
-        "aggs": {
-            "histogram_aggs": {
-            "date_histogram": {
-                "field": "@timestamp",
-                "interval": "hour"
-            },
-            "aggs": {
-            "by_request_url": {
-                "terms": {
-                "field": "request_url"
-                }
-            }
-            }
-        }
-        }
-    }
-)
+
 
 def trending_list():
+    docs = es.search(
+            index='wabawachi_logs',
+            body = {
+                "size": 0,
+                "query": {
+                    "bool": {
+                    "must": [{
+                        "wildcard": {
+                        "request_url": {
+                            "value": "/api/v1/winesearch/detail/*"
+                            }
+                        }
+                        }, 
+                        {"range": {
+                        "@timestamp": {
+                            "gte": "now-1w",
+                            "lte": "now+1h"
+                        }
+                        }
+                        }
+                    ]
+                    }
+                },  
+                "aggs": {
+                    "histogram_aggs": {
+                    "date_histogram": {
+                        "field": "@timestamp",
+                        "interval": "hour"
+                    },
+                    "aggs": {
+                    "by_request_url": {
+                        "terms": {
+                        "field": "request_url"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+        )
+            
     value = 1
     for datas in docs['aggregations']['histogram_aggs']['buckets']:
         for data in datas['by_request_url']['buckets']:    
