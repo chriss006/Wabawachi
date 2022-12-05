@@ -27,7 +27,7 @@ class WineCellerView(APIView):
         fields = {'_id':0, 'wine_id':1, 'wine_picture':1}
         wine_list =db.wine_db.find( {'wine_id':{'$in':wines}}, fields)
         
-        return Response({'wine_celler': list(wine_list)})     
+        return Response(list(wine_list)[:51])     
 
 class RecentCollectedWineView(APIView):
     
@@ -48,7 +48,7 @@ class RecentCollectedWineView(APIView):
         wine_list = db.wine_db.find( {'wine_id':{'$in':wines}}, fields)
         
         
-        return Response(list(wine_list))
+        return Response(list(wine_list)[:5])
     
 class WineCellerDetailView(APIView):
     def post(self, request, wine_id):

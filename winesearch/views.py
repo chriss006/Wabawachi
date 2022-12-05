@@ -93,7 +93,7 @@ class SearchView(APIView):
             for data in docs['hits']['hits']:
                 data_list.append(data.get('_source'))
 
-        return Response(data_list)
+        return Response(data_list[:5])
     
     
 
@@ -133,17 +133,17 @@ class RecentSearchedWineView(APIView):
                 
         user = request.data.get('user_id')  
         
-        if not Winesearch.objects.get(user_id=user).exists():
+        if not Winesearch.objects.filter(user_id=user).exists():
             return Response('최근 검색한 와인이 없습니다.')
         
-        wines = Winesearch.objects.get(user_id=user)
+        wines = Winesearch.objects.filter(user_id=user)
         wine_id=[]
         for wine in wines:
             wine_id.append(wine.wine_id)
         fields = {'_id':0, 'wine_id':1, 'kname':1, 'winery':1, 'winetype':1, 'wine_picture':1}
         wine_list = list(db.wine_db.find( {'wine_id':{'$in':wine_id}}, fields))
         
-        return Response(wine_list)
+        return Response(wine_list[:5])
 
 class AddWineCellerView(APIView):
     
